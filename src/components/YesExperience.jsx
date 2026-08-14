@@ -1,8 +1,9 @@
-import { siteConfig } from '../data/siteConfig'
+import useContent from '../hooks/useContent'
 
 // Full-screen ending revealed after "Yes. Let's try again."
-// Quiet, slow, film-like. No confetti, no hearts.
 export default function YesExperience({ open }) {
+  const content = useContent()
+
   return (
     <div
       className={`ending${open ? ' is-open' : ''}`}
@@ -11,7 +12,7 @@ export default function YesExperience({ open }) {
       aria-modal="true"
       aria-label="A new beginning"
     >
-      {siteConfig.yesLines.map((line, i) => (
+      {content.yesLines.map((line, i) => (
         <p key={i} className="ending__line">
           {line.includes('\n') ? (
             <span className="multi">
@@ -28,8 +29,8 @@ export default function YesExperience({ open }) {
       ))}
 
       <p className="ending__names">
-        {siteConfig.herName} × {siteConfig.myName}
-        <span>{siteConfig.today}</span>
+        {content.herName} × {content.myName}
+        <span>{content.today}</span>
       </p>
     </div>
   )

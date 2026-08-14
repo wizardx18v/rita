@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react'
 import Reveal from './Reveal'
 import { HeartIcon } from './Ambience'
-import { siteConfig } from '../data/siteConfig'
+import useContent from '../hooks/useContent'
 
 const DODGE_ATTEMPTS = 6
 
@@ -27,8 +27,8 @@ function randomDodgePosition() {
 }
 
 export default function FinalQuestion({ onYes, onNeedTime }) {
+  const content = useContent()
   const yesRef = useRef(null)
-  const noRef = useRef(null)
   const [noState, setNoState] = useState({ attempts: 0, pos: null, gone: false })
   const [tilt, setTilt] = useState(null)
   const [ripples, setRipples] = useState([])
@@ -110,11 +110,11 @@ export default function FinalQuestion({ onYes, onNeedTime }) {
       </Reveal>
 
       <Reveal delay={2}>
-        <p className="final__sub">{siteConfig.finalMessage}</p>
+        <p className="final__sub">{content.finalMessage}</p>
       </Reveal>
 
       <Reveal delay={3} variant="pop">
-        <p className="final__question shimmer">Would you be my girlfriend again?</p>
+        <p className="final__question fire-text">Would you be my girlfriend again?</p>
       </Reveal>
 
       <Reveal delay={4}>
@@ -132,18 +132,13 @@ export default function FinalQuestion({ onYes, onNeedTime }) {
               <HeartIcon className="btn__heart" />
               Yes. Let&rsquo;s try again.
               {ripples.map((rp) => (
-                <span
-                  key={rp.id}
-                  className="ripple"
-                  style={{ left: rp.x, top: rp.y }}
-                />
+                <span key={rp.id} className="ripple" style={{ left: rp.x, top: rp.y }} />
               ))}
             </button>
           </span>
 
           {!noState.gone && (
             <button
-              ref={noRef}
               className="btn btn--ghost btn--dodge"
               type="button"
               style={noStyle}

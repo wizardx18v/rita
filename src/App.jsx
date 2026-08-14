@@ -1,7 +1,7 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Hero from './components/Hero'
 import ChapterIndicator from './components/ChapterIndicator'
-import Ambience, { HeartIcon } from './components/Ambience'
+import Ambience from './components/Ambience'
 import HeartDivider from './components/HeartDivider'
 import ApologySection from './components/ApologySection'
 import AccountabilitySection from './components/AccountabilitySection'
@@ -14,10 +14,39 @@ import FinalQuestion from './components/FinalQuestion'
 import YesExperience from './components/YesExperience'
 import NeedTimeScreen from './components/NeedTimeScreen'
 import Epilogue from './components/Epilogue'
+import AdminPage from './admin/AdminPage'
+import { armInteractionListener } from './data/contentStore'
+
+function useHashRoute() {
+  const [hash, setHash] = useState(() => window.location.hash)
+
+  useEffect(() => {
+    const onHash = () => setHash(window.location.hash)
+    window.addEventListener('hashchange', onHash)
+    return () => window.removeEventListener('hashchange', onHash)
+  }, [])
+
+  return hash
+}
 
 export default function App() {
+  const hash = useHashRoute()
   const [yes, setYes] = useState(false)
   const [needTime, setNeedTime] = useState(false)
+
+  // Track the first click/keystroke anywhere — unlocks music autoplay.
+  useEffect(() => {
+    armInteractionListener()
+  }, [])
+
+  if (hash.startsWith('#/admin')) {
+    return (
+      <>
+        <Ambience />
+        <AdminPage />
+      </>
+    )
+  }
 
   return (
     <>

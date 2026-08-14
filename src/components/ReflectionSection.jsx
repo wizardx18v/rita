@@ -1,6 +1,6 @@
 ﻿import { useEffect, useRef, useState } from 'react'
 import Reveal from './Reveal'
-import { siteConfig } from '../data/siteConfig'
+import useContent from '../hooks/useContent'
 
 // A single line that appears when scrolled into view.
 function ReflectionLine({ text, index }) {
@@ -44,6 +44,8 @@ function useLineInView() {
 }
 
 export default function ReflectionSection() {
+  const content = useContent()
+
   return (
     <section className="section reflection" data-chapter="5" id="reflection">
       <div className="container">
@@ -51,12 +53,12 @@ export default function ReflectionSection() {
           <p className="kicker">Chapter 05</p>
         </Reveal>
         <Reveal delay={1}>
-          <h2 className="section-title" style={{ fontStyle: 'italic', marginTop: '1.4rem' }}>
-            {siteConfig.reflectionIntro}
+          <h2 className="section-title fire-text" style={{ fontStyle: 'italic', marginTop: '1.4rem' }}>
+            {content.reflectionIntro}
           </h2>
         </Reveal>
         <div style={{ marginTop: '2rem' }}>
-          {siteConfig.reflectionLines.map((line, i) => (
+          {content.reflectionLines.map((line, i) => (
             <ReflectionLine key={i} text={line} index={i} />
           ))}
         </div>

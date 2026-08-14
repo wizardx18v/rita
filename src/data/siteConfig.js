@@ -1,29 +1,32 @@
 // ---------------------------------------------------------------------------
-//  SITE CONFIG — the only file you need to edit.
-//  Every piece of personal content on the site comes from here.
-//  Fill in the placeholders. Leave any you don't want as-is ('' or []).
+//  SITE CONFIG — default content.
+//  Everything can also be edited live from the admin page (#/admin).
+//  Admin overrides are stored in localStorage and take priority over these.
 // ---------------------------------------------------------------------------
 
 export const siteConfig = {
+  // ----- Admin -------------------------------------------------------------
+  adminPassword: 'rita2026',
+
   // ----- Names -------------------------------------------------------------
   herName: '[HER NAME]',
   myName: '[MY NAME]',
 
-  // The date you ask her (used on the final "yes" screen).
+  // Date shown on the final "yes" screen.
   today: '[DATE, e.g. August 14, 2026]',
 
-  // ----- Spotify -----------------------------------------------------------
-  // Paste a full share link from the Spotify app (a song, album or playlist).
-  // The site renders the official Spotify embed for it. No fake players.
-  spotifyUrl: '',
-
-  // Optional short note shown near the Spotify embed.
-  spotifyNote:
-    'I know a song can\u2019t say what words couldn\u2019t. But some of them feel like they belong to us anyway.',
+  // ----- Music -------------------------------------------------------------
+  // Real Spotify link — the site renders the official Spotify embed for it.
+  // Defaults to "Fire on Fire" by Sam Smith.
+  spotifyUrl: 'https://open.spotify.com/track/7t3Xdbufg7q2onVsR8RBdY',
+  musicTitle: 'There\u2019s a song I still associate with you.',
+  musicParagraphs: [
+    'Some songs stop being just songs after a while. They become places \u2014 and this one is still yours.',
+    'Press play. It\u2019s the one I can\u2019t listen to without thinking of us.',
+  ],
 
   // ----- Memories ----------------------------------------------------------
-  // Add as many as you like. `photo` is optional — a path relative to /public,
-  // e.g. '/photos/us-1.jpg'. If missing, an elegant placeholder is shown.
+  // photo: paste a URL or upload from the admin page (stored as data URL).
   memories: [
     {
       date: '[DATE]',
@@ -49,7 +52,6 @@ export const siteConfig = {
   ],
 
   // ----- The apology -------------------------------------------------------
-  // Write this in your own words. Short sentences. Be specific, be honest.
   apologyParagraphs: [
     'I owe you an apology. Not the kind that tries to get past the conversation quickly \u2014 the kind I should have sat down and written a long time ago.',
     'I made mistakes. I hurt you, even when I didn\u2019t mean to, and I think the worst part is that I don\u2019t always notice the moment it happens. I said things I can\u2019t take back. I stayed silent when I should have spoken. I let days go by without telling you how I actually felt.',
@@ -58,7 +60,6 @@ export const siteConfig = {
   ],
 
   // ----- Accountability ----------------------------------------------------
-  // Large numbered statements, shown one at a time as you scroll.
   accountability: [
     'I should have listened instead of becoming defensive.',
     'I should have communicated instead of making assumptions.',
@@ -67,7 +68,7 @@ export const siteConfig = {
     'I should have shown you how much you mattered instead of assuming you already knew.',
   ],
 
-  // ----- Reflection ("If I could go back") ---------------------------------
+  // ----- Reflection --------------------------------------------------------
   reflectionIntro: 'If I could go back...',
   reflectionLines: [
     'I wouldn\u2019t change meeting you.',
@@ -87,12 +88,6 @@ export const siteConfig = {
     'I\u2019ve thought about my actions \u2014 not to excuse them, but to understand them. Because you didn\u2019t deserve to carry the weight of my mistakes.',
     'I know trust isn\u2019t rebuilt with words. I don\u2019t expect you to instantly forgive me, and I don\u2019t expect you to forget. I don\u2019t expect you to give me another chance simply because I\u2019m asking.',
     'But I want you to know that if you ever let me, I would be grateful for the opportunity to show you that I can do better. Not perfectly. But genuinely, every day, on purpose.',
-  ],
-
-  // ----- Music chapter -----------------------------------------------------
-  musicTitle: 'There\u2019s a song I still associate with you.',
-  musicParagraphs: [
-    'Some songs stop being just songs after a while. They become places \u2014 and this one is still yours.',
   ],
 
   // ----- Final question ----------------------------------------------------

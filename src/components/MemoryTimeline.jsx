@@ -1,6 +1,6 @@
 ﻿import Reveal from './Reveal'
 import { HeartIcon } from './Ambience'
-import { siteConfig } from '../data/siteConfig'
+import useContent from '../hooks/useContent'
 
 function MemoryPhoto({ photo, alt, title }) {
   if (!photo) {
@@ -22,6 +22,8 @@ function MemoryPhoto({ photo, alt, title }) {
 }
 
 export default function MemoryTimeline() {
+  const content = useContent()
+
   return (
     <section className="section memories" data-chapter="3" id="memories">
       <div className="container">
@@ -30,10 +32,10 @@ export default function MemoryTimeline() {
           <p className="kicker">Chapter 03</p>
         </Reveal>
         <Reveal delay={1} variant="pop">
-          <h2 className="section-title shimmer">The things I still remember.</h2>
+          <h2 className="section-title fire-text">The things I still remember.</h2>
         </Reveal>
 
-        {siteConfig.memories.map((memory, i) => (
+        {content.memories.map((memory, i) => (
           <Reveal
             key={i}
             variant={i % 2 === 0 ? 'fade' : 'swing'}

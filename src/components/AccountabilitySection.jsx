@@ -1,15 +1,12 @@
 import { useEffect, useRef, useState } from 'react'
 import Reveal from './Reveal'
-import { siteConfig } from '../data/siteConfig'
+import useContent from '../hooks/useContent'
 
 function AccountableLine({ index, text }) {
   const { ref, inView } = useInViewItem()
 
   return (
-    <li
-      ref={ref}
-      className={`acc-item reveal--pop${inView ? ' is-inview' : ''}`}
-    >
+    <li ref={ref} className={`acc-item reveal--pop${inView ? ' is-inview' : ''}`}>
       <span className="acc-item__num">{String(index + 1).padStart(2, '0')}</span>
       <p className="acc-item__text">{text}</p>
     </li>
@@ -45,19 +42,21 @@ function useInViewItem() {
 }
 
 export default function AccountabilitySection() {
+  const content = useContent()
+
   return (
-    <section className="section section--alt" data-chapter="2" id="accountability">
+    <section className="section section--glass" data-chapter="2" id="accountability">
       <div className="container">
         <Reveal variant="swing">
           <div className="rule" aria-hidden="true" />
           <p className="kicker">Chapter 02</p>
         </Reveal>
         <Reveal delay={1} variant="pop">
-          <h2 className="section-title">What I should have done differently.</h2>
+          <h2 className="section-title fire-text">What I should have done differently.</h2>
         </Reveal>
 
         <ul className="acc-list">
-          {siteConfig.accountability.map((text, i) => (
+          {content.accountability.map((text, i) => (
             <AccountableLine key={i} index={i} text={text} />
           ))}
         </ul>
