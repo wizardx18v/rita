@@ -22,7 +22,7 @@ export default function Ambience() {
 
   const embers = useMemo(
     () =>
-      Array.from({ length: 18 }, (_, i) => ({
+      Array.from({ length: 12 }, (_, i) => ({
         id: i,
         left: rand() * 100,
         size: 3 + rand() * 6,
@@ -47,7 +47,7 @@ export default function Ambience() {
 
   const sparkles = useMemo(
     () =>
-      Array.from({ length: 15 }, (_, i) => ({
+      Array.from({ length: 10 }, (_, i) => ({
         id: i,
         left: rand3() * 100,
         top: rand3() * 100,

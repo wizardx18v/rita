@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import '../styles/admin.css'
-import { loadContent, saveOverrides, resetOverrides } from '../data/contentStore'
+import { loadContent, saveAndSync, resetAndSync } from '../data/contentStore'
+import { getSyncInfo, saveSyncInfo, testSync, syncPull } from '../data/syncStore'
 
 const UNLOCK_KEY = 'rita:admin:unlocked'
 
@@ -53,6 +54,8 @@ export default function AdminPage() {
   const [newPassword, setNewPassword] = useState('')
   const [draft, setDraft] = useState(null)
   const [toast, setToast] = useState('')
+  const [syncUrl, setSyncUrl] = useState(() => getSyncInfo()?.dbUrl || '')
+  const [syncStatus, setSyncStatus] = useState(() => (getSyncInfo()?.dbUrl ? 'connected' : 'off'))
   const importRef = useRef(null)
   const toastTimer = useRef(null)
 
@@ -79,20 +82,40 @@ export default function AdminPage() {
     }
   }
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!draft) return
     const next = { ...draft }
     if (newPassword.trim()) next.adminPassword = newPassword.trim()
-    saveOverrides(next)
+    const pushed = await saveAndSync(next)
     setNewPassword('')
-    showToast('Saved — the site is updated')
+    showToast(pushed ? 'Saved — synced to every device' : 'Saved on this device only')
   }
 
-  const handleReset = () => {
+  const handleReset = async () => {
     if (!window.confirm('Reset everything back to the original content? This cannot be undone.')) return
-    resetOverrides()
+    const pushed = await resetAndSync()
     setDraft(loadContent())
-    showToast('Reset to defaults')
+    showToast(pushed ? 'Reset on every device' : 'Reset on this device only')
+  }
+
+  const handleConnectSync = async () => {
+    setSyncStatus('testing')
+    const result = await testSync(syncUrl)
+    if (result.ok) {
+      saveSyncInfo({ dbUrl: syncUrl.trim().replace(/\/+$/, ''), lastPushedAt: 0, lastPulledAt: 0 })
+      setSyncStatus('connected')
+      showToast('Connected — changes will sync to every device')
+      await syncPull()
+    } else {
+      setSyncStatus('off')
+      showToast(result.error || 'Could not connect')
+    }
+  }
+
+  const handleDisconnectSync = () => {
+    saveSyncInfo(null)
+    setSyncStatus('off')
+    showToast('Sync disconnected')
   }
 
   const handleExport = () => {
@@ -115,8 +138,8 @@ export default function AdminPage() {
       if (!parsed || typeof parsed !== 'object') throw new Error('not an object')
       const merged = { ...loadContent(), ...parsed }
       setDraft(merged)
-      saveOverrides(merged)
-      showToast('Imported')
+      const pushed = await saveAndSync(merged)
+      showToast(pushed ? 'Imported and synced' : 'Imported (not synced)')
     } catch {
       showToast('Import failed — invalid JSON')
     }
@@ -420,6 +443,59 @@ export default function AdminPage() {
         </div>
       </section>
 
+      {/* ---- sync ---- */}
+      <section className="admin__panel">
+        <h3>
+          Sync — make changes appear on every phone &amp; PC
+          <small>
+            Status:{' '}
+            {syncStatus === 'connected' && <b style={{ color: 'var(--fire-c)' }}>connected</b>}
+            {syncStatus === 'testing' && 'testing…'}
+            {syncStatus === 'off' && 'off — changes stay on this device only'}
+          </small>
+        </h3>
+        <div className="admin__grid admin__grid--2">
+          <div className="admin__field">
+            <label htmlFor="syncUrl">Firebase database URL</label>
+            <input
+              id="syncUrl"
+              placeholder="https://my-project-default-rtdb.firebaseio.com"
+              value={syncUrl}
+              onChange={(e) => setSyncUrl(e.target.value)}
+            />
+            <p className="admin__hint">
+              1. Go to console.firebase.google.com → create a free project → Realtime Database →
+              Create database. 2. Choose <b>test mode</b> (or use the rules shown below). 3. Copy
+              the database URL here and press Connect. 4. Enter the same URL on your other
+              devices&rsquo; admin pages. Everything stays in sync automatically.
+            </p>
+            <p className="admin__hint" style={{ marginTop: '0.6rem' }}>
+              Permanent rules (Database → Rules):
+              <br />
+              <code>
+                {`{ "rules": { "rita": { ".read": true, ".write": true } } }`}
+              </code>
+            </p>
+          </div>
+        </div>
+        <div className="admin__actions" style={{ marginTop: '1.2rem' }}>
+          {syncStatus !== 'connected' ? (
+            <button className="btn btn--ghost" type="button" onClick={handleConnectSync} style={{ padding: '0.6rem 1.4rem' }}>
+              Connect
+            </button>
+          ) : (
+            <>
+              <button className="btn btn--primary" type="button" onClick={async () => { await syncPull(); showToast('Checked for changes from other devices') }} style={{ padding: '0.6rem 1.4rem' }}>
+                Pull latest now
+              </button>
+              <button className="admin__small-btn admin__small-btn--danger" type="button" onClick={handleDisconnectSync}>
+                Disconnect
+              </button>
+            </>
+          )}
+        </div>
+      </section>
+
       {/* ---- security & data ---- */}
       <section className="admin__panel">
         <h3>
@@ -450,9 +526,9 @@ export default function AdminPage() {
           <input ref={importRef} type="file" accept="application/json" hidden onChange={handleImportFile} />
         </div>
         <p className="admin__hint" style={{ marginTop: '1rem' }}>
-          Everything is saved in this browser (localStorage). To make your changes permanent for
-          everyone, export the JSON and edit <code>src/data/siteConfig.js</code> with the same values,
-          then redeploy.
+          Content lives in this browser and, if sync is connected, on your Firebase database — so
+          every phone and PC sees the same thing. Use export/import as a backup, or edit{' '}
+          <code>src/data/siteConfig.js</code> to make changes permanent in the code itself.
         </p>
       </section>
 

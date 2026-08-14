@@ -16,6 +16,7 @@ import NeedTimeScreen from './components/NeedTimeScreen'
 import Epilogue from './components/Epilogue'
 import AdminPage from './admin/AdminPage'
 import { armInteractionListener } from './data/contentStore'
+import { startSync } from './data/syncStore'
 
 function useHashRoute() {
   const [hash, setHash] = useState(() => window.location.hash)
@@ -38,6 +39,9 @@ export default function App() {
   useEffect(() => {
     armInteractionListener()
   }, [])
+
+  // Poll the sync server so edits made on any device appear here too.
+  useEffect(() => startSync(), [])
 
   if (hash.startsWith('#/admin')) {
     return (

@@ -1,4 +1,5 @@
 import { siteConfig } from './siteConfig'
+import { syncPush } from './syncStore'
 
 const STORAGE_KEY = 'rita:content:v1'
 
@@ -36,9 +37,22 @@ export function saveOverrides(overrides) {
   window.dispatchEvent(new CustomEvent('rita:content-changed'))
 }
 
+// Saves locally, then pushes to the sync server (if one is connected).
+export async function saveAndSync(overrides) {
+  saveOverrides(overrides)
+  return syncPush(overrides)
+}
+
 export function resetOverrides() {
   localStorage.removeItem(STORAGE_KEY)
   window.dispatchEvent(new CustomEvent('rita:content-changed'))
+}
+
+// Resets locally, then pushes the default content to the sync server
+// so every device falls back to the originals too.
+export async function resetAndSync() {
+  resetOverrides()
+  return syncPush(siteConfig)
 }
 
 // ---------- first user gesture tracking (enables music autoplay) ----------
